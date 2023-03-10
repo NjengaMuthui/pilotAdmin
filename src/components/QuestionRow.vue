@@ -8,15 +8,35 @@
     <td>{{ Q.topic }}</td>
     <td>{{ Q.subtopic }}</td>
     <td>{{ Q.unit }}</td>
-    <td>{{ index }}</td>
+    <td>
+      <!-- params: { index }-->
+      <RouterLink
+        :to="{
+          name: 'editquestion',
+          params: { ID }
+        }"
+      >
+        Edit
+        {{ index }}
+      </RouterLink>
+      <button>delete</button>
+    </td>
+    <td></td>
   </tr>
 </template>
 
 <script>
+import { RouterLink } from "vue-router";
+
 export default {
   props: {
     Q: Object,
     index: Number
+  },
+  data() {
+    return {
+      ID: this.index
+    };
   }
 };
 </script>

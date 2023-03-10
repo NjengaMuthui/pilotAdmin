@@ -14,4 +14,5 @@ app.use(createPinia());
 app.use(router);
 app.use(plugin, defaultConfig);
 axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.headers.post["Content-Type"] = "application/json";
 app.mount("#app");

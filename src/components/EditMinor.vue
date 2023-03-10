@@ -39,7 +39,11 @@ export default {
   },
   methods: {
     getvalues(data) {
-      console.log(JSON.stringify(data));
+      this.dataStore.editMinorData(
+        this.$route.params.type,
+        JSON.stringify(data),
+        this.$route.params.ID
+      );
     }
   }
 };

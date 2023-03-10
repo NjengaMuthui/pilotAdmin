@@ -1,4 +1,4 @@
-admin Panel for managing a databse for questions
+admin Panel for managing a database for questions
 
 # pilotAdmin
 

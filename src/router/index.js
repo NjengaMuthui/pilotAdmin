@@ -33,6 +33,16 @@ const router = createRouter({
       path: "/create/:type",
       name: "create",
       component: () => import("../components/CreateMinor.vue")
+    },
+    {
+      path: "/editquestion/:ID",
+      name: "editquestion",
+      component: () => import("../components/EditQuestion.vue")
+    },
+    {
+      path: "/createquestion",
+      name: "createquestion",
+      component: () => import("../components/CreateQuestion.vue")
     }
   ]
 });

@@ -79,3 +79,8 @@ input {
   padding: 10px;
   font-size: 18px;
 }
+textarea {
+  min-width: 400px;
+  outline: none;
+  border: none;
+}

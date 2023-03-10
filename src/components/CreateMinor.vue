@@ -20,17 +20,22 @@
 
 <script>
 import { FormKit } from "@formkit/vue";
+import { useDataStore } from "../stores/counter";
 
 export default {
-  components: { FormKit },
-  data() {
-    return {
-      values: null
-    };
+  setup() {
+    let dataStore = useDataStore();
+    return { dataStore };
   },
+  components: { FormKit },
   methods: {
-    getvalues(data) {
-      console.log(JSON.stringify(data));
+    async getvalues(data) {
+      let res = await this.dataStore.postMinorData(
+        this.$route.params.type,
+        "/" + this.$route.params.type,
+        data
+      );
+      console.log(res);
     }
   }
 };

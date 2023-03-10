@@ -1,6 +1,7 @@
 <script setup>
 import QuestionRow from "../components/QuestionRow.vue";
 import { useDataStore } from "../stores/counter";
+import { RouterLink } from "vue-router";
 
 let dataStore = useDataStore();
 let dt = ["questions", "topic", "subtopic", "unit"];
@@ -11,6 +12,8 @@ dt.forEach((element) => {
 
 <template>
   <main>
+    <RouterLink to="/create/question">Create New</RouterLink>
+
     <table>
       <thead>
         <tr>
