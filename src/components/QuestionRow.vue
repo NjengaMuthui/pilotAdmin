@@ -5,9 +5,9 @@
     <td>{{ Q.choiceone }}</td>
     <td>{{ Q.chocetwo }}</td>
     <td>{{ Q.choicethree }}</td>
-    <td>{{ Q.topic }}</td>
-    <td>{{ Q.subtopic }}</td>
-    <td>{{ Q.unit }}</td>
+    <td v-for="(cat, index) in Q.category">
+      {{ cat.longname }}
+    </td>
     <td>
       <!-- params: { index }-->
       <RouterLink

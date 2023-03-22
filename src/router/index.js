@@ -10,19 +10,9 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: "/topic",
-      name: "topic",
+      path: "/:type",
+      name: "category",
       component: () => import("../views/TopicView.vue")
-    },
-    {
-      path: "/subtopic",
-      name: "subtopic",
-      component: () => import("../views/SubTopicView.vue")
-    },
-    {
-      path: "/unit",
-      name: "unit",
-      component: () => import("../views/UnitView.vue")
     },
     {
       path: "/edit/:type/:ID",

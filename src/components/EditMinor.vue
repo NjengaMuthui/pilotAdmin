@@ -26,20 +26,13 @@ export default {
   },
   computed: {
     topic() {
-      switch (this.$route.params.type) {
-        case "topic":
-        default:
-          return this.dataStore.topics[this.$route.params.ID];
-        case "subtopic":
-          return this.dataStore.subtopics[this.$route.params.ID];
-        case "unit":
-          return this.dataStore.units[this.$route.params.ID];
-      }
+      return this.dataStore[this.$route.params.type][this.$route.params.ID];
     }
   },
   methods: {
     getvalues(data) {
       this.dataStore.editMinorData(
+        "/category/" + this.$route.params.type,
         this.$route.params.type,
         JSON.stringify(data),
         this.$route.params.ID

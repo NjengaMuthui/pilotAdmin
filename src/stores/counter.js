@@ -4,33 +4,28 @@ import { defineStore } from "pinia";
 export const useDataStore = defineStore("data", {
   state: () => {
     return {
-      topics: [],
-      subtopics: [],
-      units: [],
+      categories: [],
       questions: []
     };
   },
   actions: {
+    async getCategories() {
+      const res = await axios.get("/question/categories");
+      this.categories = res.data;
+    },
     async getData(req_type) {
       try {
-        const res = await axios.get("/" + req_type);
-        switch (req_type) {
-          case "topic":
-            this.topics = res.data;
-            break;
-          case "subtopic":
-            this.subtopics = res.data;
-            break;
-          case "unit":
-            this.units = res.data;
-            break;
-          case "questions":
-            this.questions = res.data;
-            break;
-        }
+        const res = await axios.get("/category", {
+          params: { type: req_type }
+        });
+        this[req_type] = res.data;
       } catch (error) {
-        alert(error);
+        console.log(error);
       }
+    },
+    async getQuestions() {
+      const res = await axios.get("/questions");
+      this.questions = res.data;
     },
     async postMinorData(type, url, postMinorData) {
       try {
@@ -39,49 +34,23 @@ export const useDataStore = defineStore("data", {
         console.log(postMinorData);
         postMinorData.ID = res.data.insertId;
 
-        switch (type) {
-          case "topic":
-            this.topics.push(postMinorData);
-            break;
-          case "subtopic":
-            this.subtopics.push(postMinorData);
-            break;
-          case "unit":
-            this.units.push(postMinorData);
-            break;
-          case "questions":
-            this.questions.push(postMinorData);
-            break;
-        }
+        this[type].push(postMinorData);
       } catch (error) {
-        alert(error);
+        console.log(error);
         return {
           err: error
         };
       }
     },
-    async editMinorData(type, editData, index) {
+    async editMinorData(url, type, editData, index) {
       try {
-        let res = await axios.post("/" + type + "/update", editData);
+        let res = await axios.put(url, editData);
         if (res.data.affectedRows == 1) {
           let dataObject = JSON.parse(editData);
-          switch (type) {
-            case "topic":
-              this.topics[index] = dataObject;
-              break;
-            case "subtopic":
-              this.subtopics[index] = dataObject;
-              break;
-            case "unit":
-              this.units[index] = dataObject;
-              break;
-            case "questions":
-              this.questions[index] = dataObject;
-              break;
-          }
+          this[type][index] = dataObject;
         }
       } catch (error) {
-        alert(error);
+        console.log(error);
         return {
           err: error
         };

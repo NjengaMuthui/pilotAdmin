@@ -1,13 +1,20 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
+import { useDataStore } from "./stores/counter";
+let dataStore = useDataStore();
 </script>
 
 <template>
   <nav>
     <RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/topic">Topic</RouterLink>
-    <RouterLink to="/subtopic">Subtopic</RouterLink>
-    <RouterLink to="/unit">Unit</RouterLink>
+    <RouterLink
+      v-for="cat in dataStore.categories"
+      :to="{
+        name: 'category',
+        params: { type: cat }
+      }"
+      >{{ cat }}</RouterLink
+    >
   </nav>
   <div class="b">
     <RouterView />

@@ -1,13 +1,21 @@
-<script setup>
+<script>
 import QuestionRow from "../components/QuestionRow.vue";
 import { useDataStore } from "../stores/counter";
 import { RouterLink } from "vue-router";
-
-let dataStore = useDataStore();
-let dt = ["questions", "topic", "subtopic", "unit"];
-dt.forEach((element) => {
-  dataStore.getData(element);
-});
+export default {
+  components: { QuestionRow },
+  setup() {
+    let dataStore = useDataStore();
+    return { dataStore };
+  },
+  async mounted() {
+    await this.dataStore.getCategories();
+    await this.dataStore.getQuestions();
+    this.dataStore.categories.forEach((element) => {
+      this.dataStore.getData(element);
+    });
+  }
+};
 </script>
 
 <template>
@@ -22,9 +30,9 @@ dt.forEach((element) => {
           <th>Choice one</th>
           <th>Choice two</th>
           <th>Choice Three</th>
-          <th>Topic</th>
-          <th>Subtopic</th>
-          <th>Unit</th>
+          <th v-for="(category, index) in dataStore.categories">
+            {{ category }}
+          </th>
           <th>Actions</th>
         </tr>
       </thead>

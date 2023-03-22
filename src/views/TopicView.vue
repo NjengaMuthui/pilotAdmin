@@ -2,12 +2,12 @@
   <RouterLink
     :to="{
       name: 'create',
-      params: { type: 'topic' }
+      params: { type: this.$route.params.type }
     }"
   >
     Create new</RouterLink
   >
-  <TableMinor minor="topic" />
+  <TableMinor :minor="this.$route.params.type" />
 </template>
 <script setup>
 import { RouterLink } from "vue-router";
