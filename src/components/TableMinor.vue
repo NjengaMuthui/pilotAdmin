@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>{{ minor.toUpperCase() }}</h1>
+    <button @click="testStore">Call Function</button>
     <table>
       <thead>
         <tr>
@@ -33,15 +34,12 @@ export default {
   },
   computed: {
     topicArray() {
-      switch (this.minor) {
-        case "topic":
-        default:
-          return this.dataStore.topics;
-        case "subtopic":
-          return this.dataStore.subtopics;
-        case "unit":
-          return this.dataStore.units;
-      }
+      return this.dataStore.$state[this.minor];
+    }
+  },
+  methods: {
+    testStore() {
+      this.dataStore.test(this.minor);
     }
   },
   components: { MinorComponent },

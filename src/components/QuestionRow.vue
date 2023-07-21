@@ -3,7 +3,7 @@
     <td>{{ Q.question }}</td>
     <td>{{ Q.answer }}</td>
     <td>{{ Q.choiceone }}</td>
-    <td>{{ Q.chocetwo }}</td>
+    <td>{{ Q.choicetwo }}</td>
     <td>{{ Q.choicethree }}</td>
     <td v-for="(cat, index) in Q.category">
       {{ cat.longname }}

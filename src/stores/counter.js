@@ -8,6 +8,26 @@ export const useDataStore = defineStore("data", {
       questions: []
     };
   },
+  getters: {
+    getOptionArray: (state) => {
+      return (category, id) => {
+        let options = [];
+        state.$state[category].forEach((element) => {
+          if (id === element.ID)
+            options.unshift({
+              label: element.longname,
+              value: element
+            });
+          else
+            options.push({
+              label: element.longname,
+              value: element
+            });
+        });
+        return options;
+      };
+    }
+  },
   actions: {
     async getCategories() {
       const res = await axios.get("/question/categories");
@@ -18,7 +38,9 @@ export const useDataStore = defineStore("data", {
         const res = await axios.get("/category", {
           params: { type: req_type }
         });
-        this[req_type] = res.data;
+        this.$patch({
+          [req_type]: res.data
+        });
       } catch (error) {
         console.log(error);
       }
@@ -34,7 +56,7 @@ export const useDataStore = defineStore("data", {
         console.log(postMinorData);
         postMinorData.ID = res.data.insertId;
 
-        this[type].push(postMinorData);
+        this.$state[type].push(postMinorData);
       } catch (error) {
         console.log(error);
         return {
@@ -44,16 +66,55 @@ export const useDataStore = defineStore("data", {
     },
     async editMinorData(url, type, editData, index) {
       try {
+        console.log(editData);
         let res = await axios.put(url, editData);
         if (res.data.affectedRows == 1) {
-          let dataObject = JSON.parse(editData);
-          this[type][index] = dataObject;
+          this.$state[type][index].longname = editData.longname;
+          this.$state[type][index].shortname = editData.shortname;
         }
       } catch (error) {
         console.log(error);
         return {
           err: error
         };
+      }
+    },
+    async editQuestion(editData, index) {
+      try {
+        let res = await axios.put("/question", editData);
+        if (res.data.affectedRows == 1) {
+          this.questions[index].category = [];
+          this.categories.forEach((element) => {
+            this.questions[index].category.push(editData[element].value);
+            return 1;
+          });
+        }
+        return res;
+      } catch (error) {
+        return error;
+      }
+    },
+    async createQuestion(question) {
+      try {
+        let res = await axios.put("/question", question);
+        if (res.data.affectedRows == 1) {
+          question.category = [];
+          this.categories.forEach((element) => {
+            question.category.push(question[element]);
+          });
+          this.questions.unshift(question);
+        }
+      } catch (error) {
+        return error;
+      }
+    },
+    async modifyCategory(data) {
+      try {
+        let res = await axios.post("/question/categories", data);
+        console.log(res);
+        return res;
+      } catch (error) {
+        return error;
       }
     }
   }

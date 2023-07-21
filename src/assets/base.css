@@ -84,3 +84,22 @@ textarea {
   outline: none;
   border: none;
 }
+.show {
+  display: block;
+}
+.hide {
+  display: none;
+}
+.edit {
+  position: relative;
+}
+.loading-div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+}

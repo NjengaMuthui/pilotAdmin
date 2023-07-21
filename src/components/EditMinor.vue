@@ -26,15 +26,18 @@ export default {
   },
   computed: {
     topic() {
-      return this.dataStore[this.$route.params.type][this.$route.params.ID];
+      return this.dataStore.$state[this.$route.params.type][
+        this.$route.params.ID
+      ];
     }
   },
   methods: {
     getvalues(data) {
+      data.type = this.$route.params.type;
       this.dataStore.editMinorData(
-        "/category/" + this.$route.params.type,
+        "/category/",
         this.$route.params.type,
-        JSON.stringify(data),
+        data,
         this.$route.params.ID
       );
     }
