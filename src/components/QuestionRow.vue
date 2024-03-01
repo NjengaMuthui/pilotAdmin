@@ -1,10 +1,13 @@
 <template>
   <tr>
+    <td>{{ Q.uuid }}</td>
     <td>{{ Q.question }}</td>
     <td>{{ Q.answer }}</td>
     <td>{{ Q.choiceone }}</td>
     <td>{{ Q.choicetwo }}</td>
     <td>{{ Q.choicethree }}</td>
+    <td>{{ Q.level }}</td>
+    <td>{{ Q.subject }}</td>
     <td v-for="(cat, index) in Q.category">
       {{ cat.longname }}
     </td>
@@ -17,9 +20,8 @@
         }"
       >
         Edit
-        {{ index }}
       </RouterLink>
-      <button>delete</button>
+      <button class="delete">delete</button>
     </td>
     <td></td>
   </tr>
@@ -41,4 +43,10 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.delete{
+  color: #fff;
+  background-color: crimson;
+  margin-top: 5px;
+}
+</style>

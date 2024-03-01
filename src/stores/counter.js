@@ -5,7 +5,11 @@ export const useDataStore = defineStore("data", {
   state: () => {
     return {
       categories: [],
-      questions: []
+      questions: [],
+      currentIndex: 0,
+      questionsTotalCount: 0,
+      currentPage: 1,
+      currentSet: 1,
     };
   },
   getters: {
@@ -16,37 +20,54 @@ export const useDataStore = defineStore("data", {
           if (id === element.ID)
             options.unshift({
               label: element.longname,
-              value: element
+              value: element,
             });
           else
             options.push({
               label: element.longname,
-              value: element
+              value: element,
             });
         });
         return options;
       };
-    }
+    },
   },
   actions: {
     async getCategories() {
       const res = await axios.get("/question/categories");
       this.categories = res.data;
     },
+    async getQuestionsCount(Obj) {
+      const queryString = Object.keys(Obj)
+        .map(
+          (key) => `${encodeURIComponent(key)}=${encodeURIComponent(Obj[key])}`
+        )
+        .join("&");
+
+      const res = await axios.get("/count?" + queryString);
+      console.log(res.data);
+      this.questionsTotalCount = res.data[0].count;
+    },
     async getData(req_type) {
       try {
         const res = await axios.get("/category", {
-          params: { type: req_type }
+          params: { type: req_type },
         });
         this.$patch({
-          [req_type]: res.data
+          [req_type]: res.data,
         });
       } catch (error) {
         console.log(error);
       }
     },
-    async getQuestions() {
-      const res = await axios.get("/questions");
+    async getQuestions(page) {
+      const queryString = Object.keys(page)
+        .map(
+          (key) => `${encodeURIComponent(key)}=${encodeURIComponent(page[key])}`
+        )
+        .join("&");
+
+      const res = await axios.get("/questions?" + queryString);
       this.questions = res.data;
     },
     async postMinorData(type, url, postMinorData) {
@@ -60,7 +81,7 @@ export const useDataStore = defineStore("data", {
       } catch (error) {
         console.log(error);
         return {
-          err: error
+          err: error,
         };
       }
     },
@@ -75,7 +96,7 @@ export const useDataStore = defineStore("data", {
       } catch (error) {
         console.log(error);
         return {
-          err: error
+          err: error,
         };
       }
     },
@@ -116,6 +137,6 @@ export const useDataStore = defineStore("data", {
       } catch (error) {
         return error;
       }
-    }
-  }
+    },
+  },
 });

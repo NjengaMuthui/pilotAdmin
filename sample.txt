@@ -1,0 +1,103 @@
+<template>
+  <div>
+    <button @click="prevSet" :disabled="currentSet === 1">Previous</button>
+    <template v-for="pageNumber in visiblePageNumbers">
+      <button :key="pageNumber" @click="goToPage(pageNumber)" :class="{ active: pageNumber === currentPage }">{{ pageNumber }}</button>
+    </template>
+    <button @click="nextSet" :disabled="currentSet === totalSets">Next</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  </div>
+</template>
+
+<script>
+import { ref, computed } from 'vue';
+
+export default {
+  setup() {
+    const currentPage = ref(1);
+    const itemsPerPage = 10;
+    const totalItems = 1000;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const pageSize = 10; // Number of visible page numbers
+    const totalSets = Math.ceil(totalPages / pageSize);
+    let currentSet = ref(1);
+
+    const visiblePageNumbers = computed(() => {
+      const startPage = (currentSet.value - 1) * pageSize + 1;
+      const endPage = Math.min(startPage + pageSize - 1, totalPages);
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    });
+
+    const goToPage = (page) => {
+      if (page >= 1 && page <= totalPages) {
+        currentPage.value = page;
+      }
+    };
+
+    const prevSet = () => {
+      if (currentSet.value > 1) {
+        currentSet.value--;
+      }
+    };
+
+    const nextSet = () => {
+      if (currentSet.value < totalSets) {
+        currentSet.value++;
+      }
+    };
+
+    return {
+      currentPage,
+      totalPages,
+      visiblePageNumbers,
+      currentSet,
+      goToPage,
+      prevSet,
+      nextSet
+    };
+  }
+};
+</script>
+
+<style scoped>
+.active {
+  font-weight: bold;
+}
+</style>
+6f652bb967
+data() {
+    return {
+      ncategory: "",
+      showInput: false
+    };
+  },
+  setup() {
+    let dataStore = useDataStore();
+    return { dataStore };
+  },
+  async mounted() {
+    await this.dataStore.getCategories();
+    await this.dataStore.getQuestionsCount();
+    await this.dataStore.getQuestions({start:0});
+    this.dataStore.categories.forEach((element) => {
+      this.dataStore.getData(element);
+    });
+  },
+  methods: {
+    async deleteColumn(category) {
+      let obj = {
+        operation: 1,
+        name: category
+      };
+      let res = await this.dataStore.modifyCategory(obj);
+      console.log(res);
+    },
+    async createColumn() {
+      let obj = {
+        operation: 0,
+        name: this.ncategory
+      };
+      let res = await this.dataStore.modifyCategory(obj);
+      console.log(res);
+    }
+  }

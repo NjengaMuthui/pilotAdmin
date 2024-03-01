@@ -5,7 +5,7 @@
       <p>Loading data...</p>
     </div>
     <FormKit type="form" @submit="getQuestion" :value="Question">
-      <FormKit type="textarea" label="detail" rows="4" name="question" />
+      <FormKit type="textarea" label="Question" rows="4" name="question" />
 
       <FormKit type="textarea" rows="3" label="Answer" name="answer" />
       <FormKit type="textarea" rows="3" label="Choice One" name="choiceone" />
@@ -16,6 +16,8 @@
         label="Choice Three"
         name="choicethree"
       />
+      <FormKit type="text" label="Level" name="level" />
+      <FormKit type="text" label="Subject" name="subject" />
 
       <FormKit
         v-for="(category, index) in dataStore.categories"
@@ -29,6 +31,16 @@
     </FormKit>
   </div>
 </template>
+<style>
+.formkit-form{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.edit{
+  margin-bottom: 40px;
+}
+</style>
 
 <script>
 import { useDataStore } from "../stores/counter";
