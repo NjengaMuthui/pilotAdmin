@@ -45,8 +45,7 @@ export const useDataStore = defineStore("data", {
         .join("&");
 
       const res = await axios.get("/count?" + queryString);
-      console.log(res.data);
-      this.questionsTotalCount = res.data[0].count;
+      this.questionsTotalCount = res.data.count;
     },
     async getData(req_type) {
       try {
