@@ -21,6 +21,7 @@
       >
         Edit
       </RouterLink>
+      <button class="move">Move to B</button>
       <button class="delete">delete</button>
     </td>
     <td></td>
@@ -44,9 +45,15 @@ export default {
 </script>
 
 <style scoped>
-.delete{
+.delete {
   color: #fff;
   background-color: crimson;
-  margin-top: 5px;
+  width: 100%;
+}
+.move {
+  color: #fff;
+  background-color: rgb(73, 20, 220);
+  width: 100%;
+  margin-bottom: 2px;
 }
 </style>

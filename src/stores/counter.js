@@ -1,6 +1,13 @@
 import axios from "axios";
 import { defineStore } from "pinia";
 
+function CreateQuery(Obj) {
+  let queryString = Object.keys(Obj)
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(Obj[key])}`)
+    .join("&");
+  return "?" + queryString;
+}
+
 export const useDataStore = defineStore("data", {
   state: () => {
     return {
@@ -9,7 +16,7 @@ export const useDataStore = defineStore("data", {
       currentIndex: 0,
       questionsTotalCount: 0,
       currentPage: 1,
-      currentSet: 1,
+      currentSet: 1
     };
   },
   getters: {
@@ -20,58 +27,46 @@ export const useDataStore = defineStore("data", {
           if (id === element.ID)
             options.unshift({
               label: element.longname,
-              value: element,
+              value: element
             });
           else
             options.push({
               label: element.longname,
-              value: element,
+              value: element
             });
         });
         return options;
       };
-    },
+    }
   },
   actions: {
     async getCategories() {
-      const res = await axios.get("/question/categories");
+      const res = await axios.get("/question/categories/get");
       this.categories = res.data;
     },
     async getQuestionsCount(Obj) {
-      const queryString = Object.keys(Obj)
-        .map(
-          (key) => `${encodeURIComponent(key)}=${encodeURIComponent(Obj[key])}`
-        )
-        .join("&");
-
-      const res = await axios.get("/count?" + queryString);
+      const res = await axios.get("/count" + CreateQuery(Obj));
       this.questionsTotalCount = res.data.count;
     },
     async getData(req_type) {
       try {
-        const res = await axios.get("/category", {
-          params: { type: req_type },
+        const res = await axios.get("/category/get", {
+          params: { type: req_type }
         });
         this.$patch({
-          [req_type]: res.data,
+          [req_type]: res.data
         });
       } catch (error) {
         console.log(error);
       }
     },
     async getQuestions(page) {
-      const queryString = Object.keys(page)
-        .map(
-          (key) => `${encodeURIComponent(key)}=${encodeURIComponent(page[key])}`
-        )
-        .join("&");
-
-      const res = await axios.get("/questions?" + queryString);
+      const res = await axios.get("/questions/get" + CreateQuery(page));
       this.questions = res.data;
     },
     async postMinorData(type, url, postMinorData) {
       try {
-        let res = await axios.post(url, postMinorData);
+        let res = await axios.get(url + CreateQuery(postMinorData));
         console.log(res.data);
         console.log(postMinorData);
         postMinorData.ID = res.data.insertId;
@@ -80,14 +75,13 @@ export const useDataStore = defineStore("data", {
       } catch (error) {
         console.log(error);
         return {
-          err: error,
+          err: error
         };
       }
     },
     async editMinorData(url, type, editData, index) {
       try {
-        console.log(editData);
-        let res = await axios.put(url, editData);
+        let res = await axios.get(url + CreateQuery(editData));
         if (res.data.affectedRows == 1) {
           this.$state[type][index].longname = editData.longname;
           this.$state[type][index].shortname = editData.shortname;
@@ -95,47 +89,34 @@ export const useDataStore = defineStore("data", {
       } catch (error) {
         console.log(error);
         return {
-          err: error,
+          err: error
         };
       }
     },
     async editQuestion(editData, index) {
       try {
-        let res = await axios.put("/question", editData);
-        if (res.data.affectedRows == 1) {
-          this.questions[index].category = [];
-          this.categories.forEach((element) => {
-            this.questions[index].category.push(editData[element].value);
-            return 1;
-          });
-        }
-        return res;
+        let res = await axios.get("/question/put" + CreateQuery(editData));
+        return res.data.result;
       } catch (error) {
         return error;
       }
     },
     async createQuestion(question) {
       try {
-        let res = await axios.put("/question", question);
-        if (res.data.affectedRows == 1) {
-          question.category = [];
-          this.categories.forEach((element) => {
-            question.category.push(question[element]);
-          });
-          this.questions.unshift(question);
-        }
+        let res = await axios.get("/question/post" + CreateQuery(question));
+        return res.data.result;
       } catch (error) {
         return error;
       }
     },
     async modifyCategory(data) {
       try {
-        let res = await axios.post("/question/categories", data);
+        let res = await axios.get("/question/categories" + CreateQuery(data));
         console.log(res);
         return res;
       } catch (error) {
         return error;
       }
-    },
-  },
+    }
+  }
 });

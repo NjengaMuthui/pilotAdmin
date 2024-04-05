@@ -14,7 +14,7 @@ import {
   faAnglesLeft,
   faAngleRight,
   faAnglesRight,
-  faCircleXmark,
+  faCircleXmark
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -31,6 +31,6 @@ app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(createPinia());
 app.use(router);
 app.use(plugin, defaultConfig);
-axios.defaults.baseURL = "https://ruirusportiffacademy.com/tinker/api";
+axios.defaults.baseURL = "https://aviationexamkenya.com/api";
 axios.defaults.headers.post["Content-Type"] = "application/json";
 app.mount("#app");

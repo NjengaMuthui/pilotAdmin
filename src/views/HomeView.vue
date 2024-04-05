@@ -17,6 +17,7 @@ const choiceTwo = ref(true);
 const choiceThree = ref(true);
 const level = ref(true);
 const subject = ref(true);
+const Loading = ref(false);
 
 const dataStore = useDataStore();
 
@@ -40,6 +41,7 @@ const visiblePageNumbers = computed(() => {
 const searchText = ref("");
 
 const search = async () => {
+  Loading.value = true;
   let obj = { start: (dataStore.currentPage - 1) * 10 };
   if (uuid.value) obj["uuid"] = searchText.value;
   if (question.value) obj["question"] = searchText.value;
@@ -56,6 +58,7 @@ const search = async () => {
   dataStore.categories.forEach((element) => {
     dataStore.getData(element);
   });
+  Loading.value = false;
 };
 const reset = () => {
   currentPage.value = dataStore.currentPage = 1;
@@ -94,7 +97,7 @@ const nextSet = () => {
 const deleteColumn = async (category) => {
   const obj = {
     operation: 1,
-    name: category,
+    name: category
   };
   const res = await dataStore.modifyCategory(obj);
   console.log(res);
@@ -103,13 +106,14 @@ const deleteColumn = async (category) => {
 const createColumn = async () => {
   const obj = {
     operation: 0,
-    name: state.ncategory,
+    name: state.ncategory
   };
   const res = await dataStore.modifyCategory(obj);
   console.log(res);
 };
 
 const fetchData = async () => {
+  Loading.value = true;
   let obj = { start: (dataStore.currentPage - 1) * 10 };
   await dataStore.getCategories();
   await dataStore.getQuestionsCount(obj);
@@ -117,10 +121,12 @@ const fetchData = async () => {
   dataStore.categories.forEach((element) => {
     dataStore.getData(element);
   });
+  Loading.value = false;
 };
 const getPageData = async (pageNumber) => {
+  Loading.value = true;
   let obj = {
-    start: (pageNumber - 1) * pageSize,
+    start: (pageNumber - 1) * pageSize
   };
   if (searchText.value.length > 0) {
     if (uuid.value) obj["uuid"] = searchText.value;
@@ -134,6 +140,7 @@ const getPageData = async (pageNumber) => {
   }
 
   await dataStore.getQuestions(obj);
+  Loading.value = false;
 };
 
 onMounted(fetchData);
@@ -142,7 +149,7 @@ onMounted(fetchData);
 <template>
   <main>
     <div class="top">
-      <RouterLink to="/createquestion">Create New</RouterLink>
+      <RouterLink to="/createquestion">Create A New Question</RouterLink>
       <button class="create" @click="showInput = !showInput">
         add category
       </button>
@@ -205,7 +212,88 @@ onMounted(fetchData);
         <label for="Subject">Subject</label>
       </div>
     </div>
-    <table>
+    <!-- Skeleton loader table structure -->
+    <table v-if="Loading" class="skeleton-loader">
+      <thead>
+        <tr>
+          <th>UUID</th>
+          <th>Details</th>
+          <th>Answer</th>
+          <th>Choice one</th>
+          <th>Choice two</th>
+          <th>Choice Three</th>
+          <th>level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Skeleton row -->
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="skeleton-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table v-if="!Loading">
       <thead>
         <tr>
           <th>UUID</th>
@@ -226,6 +314,16 @@ onMounted(fetchData);
         </tr>
       </thead>
       <tbody>
+        <tr v-if="Loading">
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+          <td class="skeleton"></td>
+        </tr>
         <QuestionRow
           v-for="(question, index) in dataStore.questions"
           :key="question.ID"
@@ -238,7 +336,9 @@ onMounted(fetchData);
       <button @click="prevSet" :disabled="currentSet === 1" class="nav">
         <FontAwesomeIcon icon="angles-left" />
       </button>
-      <button class="nav"><FontAwesomeIcon icon="angle-left" /></button>
+      <button class="nav" @click="goToPage(currentPage - 1)">
+        <FontAwesomeIcon icon="angle-left" />
+      </button>
 
       <button
         v-for="pageNumber in visiblePageNumbers"
@@ -250,7 +350,9 @@ onMounted(fetchData);
         {{ pageNumber }}
       </button>
 
-      <button class="nav"><FontAwesomeIcon icon="angle-right" /></button>
+      <button class="nav" @click="goToPage(currentPage + 1)">
+        <FontAwesomeIcon icon="angle-right" />
+      </button>
       <button @click="nextSet" :disabled="currentSet === totalSets" class="nav">
         <FontAwesomeIcon icon="angles-right" />
       </button>
@@ -268,6 +370,9 @@ onMounted(fetchData);
   </main>
 </template>
 <style scoped>
+main {
+  width: 100%;
+}
 .info {
   display: flex;
   flex-direction: column;
@@ -353,5 +458,48 @@ tr {
   cursor: pointer;
   position: absolute;
   right: 10px;
+}
+.skeleton-loader {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.skeleton-loader th,
+.skeleton-loader td {
+  padding: 12px;
+  height: 4rem;
+  border-bottom: 1px solid #333;
+}
+
+.skeleton-loader th {
+  background-color: #222;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+}
+
+.skeleton-loader td {
+  background-color: #111111;
+}
+
+.skeleton-loader .skeleton-row td {
+  background: linear-gradient(90deg, #111 25%, #333 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite ease-in-out;
+}
+
+.skeleton-loader .skeleton-row td {
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite ease-in-out;
+}
+
+/* Keyframe animation for loading effect */
+@keyframes loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
 }
 </style>
