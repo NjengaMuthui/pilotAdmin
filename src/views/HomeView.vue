@@ -4,6 +4,11 @@ import QuestionRow from "../components/QuestionRow.vue";
 import { useDataStore } from "../stores/counter";
 import { RouterLink } from "vue-router";
 import { computed, onMounted, ref } from "vue";
+import router from "../router";
+
+const dataStore = useDataStore();
+
+if (dataStore.currentUser.length === 0) router.push({ name: "Login" });
 
 const ncategory = ref("");
 const showInput = ref(false);
@@ -18,8 +23,6 @@ const choiceThree = ref(true);
 const level = ref(true);
 const subject = ref(true);
 const Loading = ref(false);
-
-const dataStore = useDataStore();
 
 const totalPages = computed(() =>
   Math.ceil(dataStore.questionsTotalCount / itemsPerPage.value)

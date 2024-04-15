@@ -134,8 +134,9 @@ export default {
     async getQuestion(data) {
       this.loading = true;
       let res = await this.dataStore.editQuestion(data, this.$route.params.ID);
-      console.log(res);
+
       this.loading = false;
+      this.Question = data;
     }
   }
 };

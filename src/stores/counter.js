@@ -16,7 +16,8 @@ export const useDataStore = defineStore("data", {
       currentIndex: 0,
       questionsTotalCount: 0,
       currentPage: 1,
-      currentSet: 1
+      currentSet: 1,
+      currentUser: ""
     };
   },
   getters: {
@@ -48,6 +49,10 @@ export const useDataStore = defineStore("data", {
       const res = await axios.get("/count" + CreateQuery(Obj));
       this.questionsTotalCount = res.data.count;
     },
+    async login(obj) {
+      const res = await axios.get("/login" + CreateQuery(obj));
+      return res.data.result;
+    },
     async getData(req_type) {
       try {
         const res = await axios.get("/category/get", {
@@ -67,8 +72,6 @@ export const useDataStore = defineStore("data", {
     async postMinorData(type, url, postMinorData) {
       try {
         let res = await axios.get(url + CreateQuery(postMinorData));
-        console.log(res.data);
-        console.log(postMinorData);
         postMinorData.ID = res.data.insertId;
 
         this.$state[type].push(postMinorData);
