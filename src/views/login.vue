@@ -14,7 +14,7 @@
       <div class="text-container">
         <WavyLabelInput
           v-if="showPassword"
-          Type="password"
+          Type="text"
           Label="Password"
           v-model="password"
           :Required="true"
@@ -22,7 +22,7 @@
         />
         <WavyLabelInput
           v-else
-          Type="text"
+          Type="password"
           Label="Password"
           v-model="password"
           :Required="true"
