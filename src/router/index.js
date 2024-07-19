@@ -14,14 +14,18 @@ const router = createRouter({
       name: "Login",
       component: () => import("../views/login.vue")
     },
-
+    {
+      path: "/reserve",
+      name: "Reserve",
+      component: () => import("../views/Reserve.vue")
+    },
     {
       path: "/:type",
       name: "category",
       component: () => import("../views/TopicView.vue")
     },
     {
-      path: "/edit/:type/:ID",
+      path: "/edit/:type/:ID/:Table",
       name: "edit",
       component: () => import("../components/EditMinor.vue")
     },
@@ -31,7 +35,7 @@ const router = createRouter({
       component: () => import("../components/CreateMinor.vue")
     },
     {
-      path: "/editquestion/:ID",
+      path: "/editquestion/:ID/:Table",
       name: "editquestion",
       component: () => import("../components/EditQuestion.vue")
     },

@@ -17,6 +17,11 @@ export const useDataStore = defineStore("data", {
       questionsTotalCount: 0,
       currentPage: 1,
       currentSet: 1,
+      reserves: [],
+      currentReserveIndex: 0,
+      questionsReserveCount: 0,
+      currentReservePage: 1,
+      currentReserveSet: 1,
       currentUser: ""
     };
   },
@@ -41,17 +46,27 @@ export const useDataStore = defineStore("data", {
     }
   },
   actions: {
+    removeQuestion(index) {
+      if (index >= 0 && index < this.questions.length) {
+        this.questions.splice(index, 1);
+      }
+    },
     async getCategories() {
       const res = await axios.get("/question/categories/get");
       this.categories = res.data;
     },
     async getQuestionsCount(Obj) {
       const res = await axios.get("/count" + CreateQuery(Obj));
-      this.questionsTotalCount = res.data.count;
+      if (Obj.table === "questions") this.questionsTotalCount = res.data.count;
+      else this.questionsReserveCount = res.data.count;
     },
     async login(obj) {
       const res = await axios.get("/login" + CreateQuery(obj));
       return res.data.result;
+    },
+    async moveQuestion(obj) {
+      const res = await axios.get("/move" + CreateQuery(obj));
+      return res;
     },
     async getData(req_type) {
       try {
@@ -96,10 +111,11 @@ export const useDataStore = defineStore("data", {
         };
       }
     },
-    async editQuestion(editData, index) {
+    async editQuestion(editData) {
       try {
         let res = await axios.get("/question/put" + CreateQuery(editData));
-        return res.data.result;
+        console.log(res);
+        return res;
       } catch (error) {
         return error;
       }

@@ -19,6 +19,26 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  --arrow-space: 10px;
+  --main-backgound: #f2f6f7;
+  --visible-gray: rgb(90, 90, 90);
+  --raisin-black: #2e282a;
+  --light-white: #fff;
+  --contrasting-gray: gray;
+  --mark-container: 10px;
+  --light-gray: rgb(177, 177, 177);
+  --correct-answer: #04aa6d;
+  --incorrect-answer: #ff5c33;
+  --zafre: #0d21a1;
+  --dark-blue: #00227a;
+  --teal: #03dac5;
+  --always-dark: #121212;
+  --cicular-progress: 100px;
+  --outer-cicular: 110px;
+  --indigo: #304ffe;
+  --min-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  --m-text-color: #000;
+  --color-heading: #0d0908;
 }
 
 /* semantic color variables for this project */
@@ -34,6 +54,16 @@
   --color-text: var(--vt-c-text-light-1);
 
   --section-gap: 160px;
+  --visible-gray: rgb(165, 165, 165);
+  --raisin-black: #d1d7d5;
+  --light-white: #121212;
+  --contrasting-gray: #7f7f7f;
+  --light-gray: rgb(78, 78, 78);
+  --min-shadow: none;
+  --land-image: url("../assets/landdark.png");
+  --m-text-color: #fff;
+  --color-heading: #f2f6f7;
+  --zafre: #ef798a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -103,7 +133,7 @@ textarea {
   padding: 20px;
   border-radius: 10px;
 }
-button{
+button {
   border: none;
   display: inline-block;
   padding: 8px 16px;
@@ -117,10 +147,10 @@ button{
   white-space: nowrap;
   transition: opacity 0s;
 }
-button:hover{
-  box-shadow: 0 8px 16px 0 rgba(255, 255, 255, 0.2), 0 6px 20px 0 rgba(255, 255, 255, 0.19);
+button:hover {
+  box-shadow: 0 8px 16px 0 rgba(255, 255, 255, 0.2),
+    0 6px 20px 0 rgba(255, 255, 255, 0.19);
 }
 button:active {
   opacity: 0.5;
 }
-

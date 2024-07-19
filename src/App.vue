@@ -7,6 +7,7 @@ let dataStore = useDataStore();
 <template>
   <nav>
     <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="/reserve">Reserve Questions</RouterLink>
     <RouterLink
       v-for="cat in dataStore.categories"
       :to="{

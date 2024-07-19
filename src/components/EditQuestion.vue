@@ -132,11 +132,18 @@ export default {
   },
   methods: {
     async getQuestion(data) {
+      data["table"] = this.$route.params.Table;
       this.loading = true;
       let res = await this.dataStore.editQuestion(data, this.$route.params.ID);
-
       this.loading = false;
-      this.Question = data;
+      let msg = "";
+      if (res.data.result === "success") {
+        msg = "Question Edited successfully";
+        Object.keys(this.Question).forEach((key) => {
+          this.Question[key] = data[key];
+        });
+      } else msg = res.data.error;
+      alert(msg);
     }
   }
 };

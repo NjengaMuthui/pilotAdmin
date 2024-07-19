@@ -9,6 +9,7 @@ import "./assets/main.css";
 import axios from "axios";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import {
   faAngleLeft,
   faAnglesLeft,
@@ -22,7 +23,9 @@ library.add(
   faAnglesLeft,
   faAngleRight,
   faAnglesRight,
-  faCircleXmark
+  faCircleXmark,
+  faEye,
+  faEyeSlash
 );
 
 const app = createApp(App);

@@ -7,13 +7,34 @@
       Label="Username"
       v-model="username"
       :Required="true"
+      :errorMessage="usernameError"
+      :validator="validateName"
     />
-    <WavyLabelInput
-      Type="password"
-      Label="Password"
-      v-model="password"
-      :Required="true"
-    />
+    <div class="password-container">
+      <div class="text-container">
+        <WavyLabelInput
+          v-if="showPassword"
+          Type="password"
+          Label="Password"
+          v-model="password"
+          :Required="true"
+          @keyup.enter="login"
+        />
+        <WavyLabelInput
+          v-else
+          Type="text"
+          Label="Password"
+          v-model="password"
+          :Required="true"
+          @keyup.enter="login"
+        />
+      </div>
+      <div @click="showPassword = !showPassword" class="eye">
+        <font-awesome-icon v-if="showPassword" icon="fa-regular fa-eye-slash" />
+        <font-awesome-icon v-else icon="fa-regular fa-eye" />
+      </div>
+    </div>
+
     <p class="info" v-if="incorrect">
       Incorrect Username and password combination
     </p>
@@ -34,9 +55,15 @@ import router from "../router";
 let dataStore = useDataStore();
 
 const username = ref("");
+const usernameError = ref("Too short");
 const password = ref("");
 const incorrect = ref(false);
 const loading = ref(false);
+const showPassword = ref(false);
+
+function validateName(value) {
+  return value.length > 3;
+}
 
 async function login() {
   loading.value = true;
@@ -55,6 +82,20 @@ async function login() {
 </script>
 
 <style scoped>
+.password-container {
+  display: flex;
+}
+.text-container,
+.eye {
+  display: flex;
+  flex-direction: column;
+}
+.eye {
+  margin-left: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
 .loader {
   display: flex;
   margin-left: 45%;

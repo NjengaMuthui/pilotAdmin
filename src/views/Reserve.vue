@@ -25,12 +25,12 @@ const subject = ref(true);
 const Loading = ref(false);
 
 const totalPages = computed(() =>
-  Math.ceil(dataStore.questionsTotalCount / itemsPerPage.value)
+  Math.ceil(dataStore.questionsReserveCount / itemsPerPage.value)
 );
 const pageSize = 10;
 
-const currentPage = ref(dataStore.currentPage);
-let currentSet = ref(dataStore.currentSet);
+const currentPage = ref(dataStore.currentReservePage);
+let currentSet = ref(dataStore.currentReserveSet);
 const totalSets = computed(() => Math.ceil(totalPages.value / pageSize));
 
 const visiblePageNumbers = computed(() => {
@@ -45,7 +45,10 @@ const searchText = ref("");
 
 const search = async () => {
   Loading.value = true;
-  let obj = { table: "questions", start: (dataStore.currentPage - 1) * 10 };
+  let obj = {
+    table: "reserve",
+    start: (dataStore.currentReservePage - 1) * 10
+  };
   if (uuid.value) obj["uuid"] = searchText.value;
   if (question.value) obj["question"] = searchText.value;
   if (answer.value) obj["answer"] = searchText.value;
@@ -115,11 +118,14 @@ const createColumn = async () => {
   console.log(res);
 };
 
-const questions = ref("questions");
+const questions = ref("reserve");
 
 const fetchData = async () => {
   Loading.value = true;
-  let obj = { table: "questions", start: (dataStore.currentPage - 1) * 10 };
+  let obj = {
+    table: "reserve",
+    start: (dataStore.currentReservePage - 1) * 10
+  };
   await dataStore.getCategories();
   await dataStore.getQuestionsCount(obj);
   await dataStore.getQuestions(obj);
@@ -131,7 +137,7 @@ const fetchData = async () => {
 const getPageData = async (pageNumber) => {
   Loading.value = true;
   let obj = {
-    table: "questions",
+    table: "reserve",
     start: (pageNumber - 1) * pageSize
   };
   if (searchText.value.length > 0) {
@@ -371,7 +377,7 @@ onMounted(fetchData);
       </p>
       <p>
         Total Number Of Questions is
-        <strong>{{ dataStore.questionsTotalCount }}</strong>
+        <strong>{{ dataStore.questionsReserveCount }}</strong>
       </p>
     </div>
   </main>
