@@ -3,26 +3,37 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import QuestionRow from "../components/QuestionRow.vue";
 import { useDataStore } from "../stores/counter";
 import { RouterLink } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, watch, onMounted, ref } from "vue";
 import router from "../router";
 
 const dataStore = useDataStore();
 
-if (dataStore.currentUser.length === 0) router.push({ name: "Login" });
+onBeforeMount(() => {
+  if (dataStore.currentUser.length === 0) router.push({ name: "Login" });
+});
 
 const ncategory = ref("");
 const showInput = ref(false);
 const itemsPerPage = ref(10);
-
-const uuid = ref(true);
-const question = ref(true);
-const answer = ref(true);
-const choiceOne = ref(true);
-const choiceTwo = ref(true);
-const choiceThree = ref(true);
-const level = ref(true);
-const subject = ref(true);
 const Loading = ref(false);
+const allSelect = ref(true);
+
+watch(
+  dataStore.columns,
+  (newColumns) => {
+    if (newColumns.some((column) => column.value === false)) {
+      allSelect.value = false;
+    }
+  },
+  { deep: true }
+);
+watch(allSelect, (newVal) => {
+  if (newVal) {
+    dataStore.columns.forEach((column) => {
+      column.value = true;
+    });
+  }
+});
 
 const totalPages = computed(() =>
   Math.ceil(dataStore.questionsReserveCount / itemsPerPage.value)
@@ -49,21 +60,13 @@ const search = async () => {
     table: "reserve",
     start: (dataStore.currentReservePage - 1) * 10
   };
-  if (uuid.value) obj["uuid"] = searchText.value;
-  if (question.value) obj["question"] = searchText.value;
-  if (answer.value) obj["answer"] = searchText.value;
-  if (choiceOne.value) obj["choiceOne"] = searchText.value;
-  if (choiceTwo.value) obj["choiceTwo"] = searchText.value;
-  if (choiceThree.value) obj["choiceThree"] = searchText.value;
-  if (level.value) obj["level"] = searchText.value;
-  if (subject.value) obj["subject"] = searchText.value;
+  dataStore.columns.value.forEach((element) => {
+    if (element.value) obj[element.db] = searchText.value;
+  });
 
   await dataStore.getQuestionsCount(obj);
 
   await dataStore.getQuestions(obj);
-  dataStore.categories.forEach((element) => {
-    dataStore.getData(element);
-  });
   Loading.value = false;
 };
 const reset = () => {
@@ -73,6 +76,9 @@ const searchReset = async () => {
   reset();
   await search();
 };
+async function fetchCategories() {
+  await dataStore.getCategories();
+}
 const goToPage = async (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -112,7 +118,7 @@ const deleteColumn = async (category) => {
 const createColumn = async () => {
   const obj = {
     operation: 0,
-    name: state.ncategory
+    name: ncategory.value
   };
   const res = await dataStore.modifyCategory(obj);
   console.log(res);
@@ -126,12 +132,8 @@ const fetchData = async () => {
     table: "reserve",
     start: (dataStore.currentReservePage - 1) * 10
   };
-  await dataStore.getCategories();
   await dataStore.getQuestionsCount(obj);
   await dataStore.getQuestions(obj);
-  dataStore.categories.forEach((element) => {
-    dataStore.getData(element);
-  });
   Loading.value = false;
 };
 const getPageData = async (pageNumber) => {
@@ -140,22 +142,18 @@ const getPageData = async (pageNumber) => {
     table: "reserve",
     start: (pageNumber - 1) * pageSize
   };
-  if (searchText.value.length > 0) {
-    if (uuid.value) obj["uuid"] = searchText.value;
-    if (question.value) obj["question"] = searchText.value;
-    if (answer.value) obj["answer"] = searchText.value;
-    if (choiceOne.value) obj["choiceOne"] = searchText.value;
-    if (choiceTwo.value) obj["choiceTwo"] = searchText.value;
-    if (choiceThree.value) obj["choiceThree"] = searchText.value;
-    if (level.value) obj["level"] = searchText.value;
-    if (subject.value) obj["subject"] = searchText.value;
-  }
+  dataStore.columns.forEach((element) => {
+    if (element.value) obj[element.db] = searchText.value;
+  });
 
   await dataStore.getQuestions(obj);
   Loading.value = false;
 };
 
-onMounted(fetchData);
+onMounted(async () => {
+  await fetchCategories();
+  await fetchData();
+});
 </script>
 
 <template>
@@ -189,39 +187,15 @@ onMounted(fetchData);
       </button>
     </div>
     <div class="hide-show-columns">
-      <div class="check-label">
-        <input type="checkbox" v-model="uuid" id="uuid" />
-        <label for="uuid">uuid</label>
-      </div>
-
-      <div class="check-label">
-        <input type="checkbox" v-model="question" id="Question" />
-        <label for="Question">Question</label>
-      </div>
-      <div class="check-label">
-        <input type="checkbox" v-model="answer" id="Answer" />
-        <label for="Answer">Answer</label>
-      </div>
-      <div class="check-label">
-        <input type="checkbox" v-model="choiceOne" id="Choice One" />
-        <label for="Choice One">Choice One</label>
-      </div>
-      <div class="check-label">
-        <input type="checkbox" v-model="choiceTwo" id="Choice Two" />
-        <label for="Choice Two">Choice Two</label>
-      </div>
-      <div class="check-label">
-        <input type="checkbox" v-model="choiceThree" id="Choice Three" />
-        <label for="Choice Three">Choice Three</label>
-      </div>
-      <div class="check-label">
-        <input type="checkbox" v-model="level" id="Level" />
-        <label for="Level">Level</label>
-      </div>
-
-      <div class="check-label">
-        <input type="checkbox" v-model="subject" id="Subject" />
-        <label for="Subject">Subject</label>
+      <input class="check-label" type="checkbox" v-model="allSelect" id="all" />
+      <label for="all">All</label>
+      <div
+        v-for="(column, index) in dataStore.columns"
+        :key="index"
+        class="check-label"
+      >
+        <input type="checkbox" v-model="column.value" :id="column.label" />
+        <label :for="column.label">{{ column.label }}</label>
       </div>
     </div>
     <!-- Skeleton loader table structure -->

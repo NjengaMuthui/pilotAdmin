@@ -3,26 +3,38 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import QuestionRow from "../components/QuestionRow.vue";
 import { useDataStore } from "../stores/counter";
 import { RouterLink } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, watch, onMounted, ref } from "vue";
 import router from "../router";
 
 const dataStore = useDataStore();
 
-if (dataStore.currentUser.length === 0) router.push({ name: "Login" });
+onBeforeMount(() => {
+  if (dataStore.currentUser.length === 0) router.push({ name: "Login" });
+});
 
 const ncategory = ref("");
 const showInput = ref(false);
 const itemsPerPage = ref(10);
 
-const uuid = ref(true);
-const question = ref(true);
-const answer = ref(true);
-const choiceOne = ref(true);
-const choiceTwo = ref(true);
-const choiceThree = ref(true);
-const level = ref(true);
-const subject = ref(true);
 const Loading = ref(false);
+const allSelect = ref(true);
+
+watch(
+  dataStore.columns,
+  (newColumns) => {
+    if (newColumns.some((column) => column.value === false)) {
+      allSelect.value = false;
+    }
+  },
+  { deep: true }
+);
+watch(allSelect, (newVal) => {
+  if (newVal) {
+    dataStore.columns.forEach((column) => {
+      column.value = true;
+    });
+  }
+});
 
 const totalPages = computed(() =>
   Math.ceil(dataStore.questionsTotalCount / itemsPerPage.value)
@@ -46,21 +58,17 @@ const searchText = ref("");
 const search = async () => {
   Loading.value = true;
   let obj = { table: "questions", start: (dataStore.currentPage - 1) * 10 };
-  if (uuid.value) obj["uuid"] = searchText.value;
-  if (question.value) obj["question"] = searchText.value;
-  if (answer.value) obj["answer"] = searchText.value;
-  if (choiceOne.value) obj["choiceOne"] = searchText.value;
-  if (choiceTwo.value) obj["choiceTwo"] = searchText.value;
-  if (choiceThree.value) obj["choiceThree"] = searchText.value;
-  if (level.value) obj["level"] = searchText.value;
-  if (subject.value) obj["subject"] = searchText.value;
+  dataStore.columns.value.forEach((element) => {
+    if (element.value) obj[element.db] = searchText.value;
+  });
 
   await dataStore.getQuestionsCount(obj);
 
   await dataStore.getQuestions(obj);
-  dataStore.categories.forEach((element) => {
+  /*dataStore.categories.forEach((element) => {
     dataStore.getData(element);
   });
+  */
   Loading.value = false;
 };
 const reset = () => {
@@ -103,29 +111,28 @@ const deleteColumn = async (category) => {
     name: category
   };
   const res = await dataStore.modifyCategory(obj);
-  console.log(res);
+  router.push({ name: "home" });
 };
 
 const createColumn = async () => {
   const obj = {
     operation: 0,
-    name: state.ncategory
+    name: ncategory.value
   };
   const res = await dataStore.modifyCategory(obj);
-  console.log(res);
+  router.push({ name: "home" });
 };
 
 const questions = ref("questions");
+async function fetchCategories() {
+  await dataStore.getCategories();
+}
 
 const fetchData = async () => {
   Loading.value = true;
   let obj = { table: "questions", start: (dataStore.currentPage - 1) * 10 };
-  await dataStore.getCategories();
   await dataStore.getQuestionsCount(obj);
   await dataStore.getQuestions(obj);
-  dataStore.categories.forEach((element) => {
-    dataStore.getData(element);
-  });
   Loading.value = false;
 };
 const getPageData = async (pageNumber) => {
@@ -134,22 +141,17 @@ const getPageData = async (pageNumber) => {
     table: "questions",
     start: (pageNumber - 1) * pageSize
   };
-  if (searchText.value.length > 0) {
-    if (uuid.value) obj["uuid"] = searchText.value;
-    if (question.value) obj["question"] = searchText.value;
-    if (answer.value) obj["answer"] = searchText.value;
-    if (choiceOne.value) obj["choiceOne"] = searchText.value;
-    if (choiceTwo.value) obj["choiceTwo"] = searchText.value;
-    if (choiceThree.value) obj["choiceThree"] = searchText.value;
-    if (level.value) obj["level"] = searchText.value;
-    if (subject.value) obj["subject"] = searchText.value;
-  }
-
+  dataStore.columns.forEach((element) => {
+    if (element.value) obj[element.db] = searchText.value;
+  });
   await dataStore.getQuestions(obj);
   Loading.value = false;
 };
 
-onMounted(fetchData);
+onMounted(async () => {
+  await fetchCategories();
+  await fetchData();
+});
 </script>
 
 <template>
@@ -167,8 +169,12 @@ onMounted(fetchData);
         v-model="ncategory"
         placeholder="New Category"
         validation="required"
-        v-on:keyup.enter="createColumn"
-      />
+        outer-class="add_cat"
+      >
+      </FormKit>
+      <button @click="createColumn" class="add">
+        <font-awesome-icon icon="fa-solid fa-plus" /> Add
+      </button>
     </div>
     <div class="search-container">
       <input
@@ -183,6 +189,18 @@ onMounted(fetchData);
       </button>
     </div>
     <div class="hide-show-columns">
+      <input class="check-label" type="checkbox" v-model="allSelect" id="all" />
+      <label for="all">All</label>
+      <div
+        v-for="(column, index) in dataStore.columns"
+        :key="index"
+        class="check-label"
+      >
+        <input type="checkbox" v-model="column.value" :id="column.label" />
+        <label :for="column.label">{{ column.label }}</label>
+      </div>
+    </div>
+    <!-- <div class="hide-show-columns">
       <div class="check-label">
         <input type="checkbox" v-model="uuid" id="uuid" />
         <label for="uuid">uuid</label>
@@ -218,6 +236,7 @@ onMounted(fetchData);
         <label for="Subject">Subject</label>
       </div>
     </div>
+    -->
     <!-- Skeleton loader table structure -->
     <table v-if="Loading" class="skeleton-loader">
       <thead>
@@ -377,6 +396,16 @@ onMounted(fetchData);
   </main>
 </template>
 <style scoped>
+input {
+  outline: none;
+  border: none;
+  padding: 10px;
+  font-size: 18px;
+}
+.add {
+  background-color: green;
+  color: white;
+}
 main {
   width: 100%;
 }
@@ -410,8 +439,9 @@ tr {
   border-bottom: 1px solid var(--color-border);
 }
 .delete {
-  opacity: 0.1;
+  opacity: 0.5;
   transition: opacity 0.3s ease-in;
+  color: crimson;
 }
 .delete:hover {
   opacity: 1;
@@ -457,6 +487,9 @@ tr {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  outline: none;
+  padding: 10px;
+  font-size: 18px;
 }
 
 .clear-button {

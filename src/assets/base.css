@@ -104,11 +104,13 @@ body {
 }
 input {
   outline: none;
-  border: none;
+  border: 1px solid #ccc;
   padding: 10px;
   font-size: 18px;
 }
+
 textarea {
+  border: 1px solid #ccc;
   min-width: 400px;
   outline: none;
   border: none;

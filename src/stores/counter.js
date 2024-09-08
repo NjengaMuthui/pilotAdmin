@@ -22,7 +22,30 @@ export const useDataStore = defineStore("data", {
       questionsReserveCount: 0,
       currentReservePage: 1,
       currentReserveSet: 1,
-      currentUser: ""
+      currentUser: "",
+      columns: [
+        { value: true, label: "UUID", db: "uuid" },
+        { value: true, label: "Question", db: "question" },
+        { value: true, label: "Answer", db: "answer" },
+        { value: true, label: "Choice One", db: "choiceOne" },
+        { value: true, label: "Choice Two", db: "choiceTwo" },
+        { value: true, label: "Choice Three", db: "choiceThree" },
+        { value: true, label: "Level", db: "level" },
+        { value: true, label: "Subject", db: "subject" }
+      ],
+      levels: ["CPL", "CPL(H)", "ATPL", "ATPL(H)"],
+      subjects: [
+        "airlaw",
+        "agk",
+        "fpp",
+        "nav",
+        "hp",
+        "icomm",
+        "met",
+        "ops",
+        "pof",
+        "vcom"
+      ]
     };
   },
   getters: {
@@ -54,6 +77,11 @@ export const useDataStore = defineStore("data", {
     async getCategories() {
       const res = await axios.get("/question/categories/get");
       this.categories = res.data;
+      if (this.columns.length === 8) {
+        this.categories.forEach((element) =>
+          this.columns.push({ value: true, label: element, db: element })
+        );
+      }
     },
     async getQuestionsCount(Obj) {
       const res = await axios.get("/count" + CreateQuery(Obj));
@@ -114,7 +142,9 @@ export const useDataStore = defineStore("data", {
     async editQuestion(editData) {
       try {
         let res = await axios.get("/question/put" + CreateQuery(editData));
-        console.log(res);
+        //let res = { data: { result: "success" } };
+        //console.log("/question/put" + CreateQuery(editData));
+
         return res;
       } catch (error) {
         return error;
@@ -130,8 +160,9 @@ export const useDataStore = defineStore("data", {
     },
     async modifyCategory(data) {
       try {
-        let res = await axios.get("/question/categories" + CreateQuery(data));
-        console.log(res);
+        let res = await axios.get(
+          "question/categories/post" + CreateQuery(data)
+        );
         return res;
       } catch (error) {
         return error;

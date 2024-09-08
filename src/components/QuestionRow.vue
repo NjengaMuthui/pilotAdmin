@@ -8,8 +8,8 @@
     <td>{{ Q.choicethree }}</td>
     <td>{{ Q.level }}</td>
     <td>{{ Q.subject }}</td>
-    <td v-for="(cat, index) in Q.category">
-      {{ cat.longname }}
+    <td v-for="category in dataStore.categories">
+      {{ Q[category] }}
     </td>
     <td>
       <!-- params: { index }-->

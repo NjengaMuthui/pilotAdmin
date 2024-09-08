@@ -15,7 +15,11 @@ import {
   faAnglesLeft,
   faAngleRight,
   faAnglesRight,
-  faCircleXmark
+  faCircleXmark,
+  faAngleUp,
+  faAngleDown,
+  faPlus,
+  faUpload
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -25,7 +29,11 @@ library.add(
   faAnglesRight,
   faCircleXmark,
   faEye,
-  faEyeSlash
+  faEyeSlash,
+  faAngleUp,
+  faAngleDown,
+  faPlus,
+  faUpload
 );
 
 const app = createApp(App);

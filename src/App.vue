@@ -8,14 +8,6 @@ let dataStore = useDataStore();
   <nav>
     <RouterLink to="/">Home</RouterLink>
     <RouterLink to="/reserve">Reserve Questions</RouterLink>
-    <RouterLink
-      v-for="cat in dataStore.categories"
-      :to="{
-        name: 'category',
-        params: { type: cat }
-      }"
-      >{{ cat }}</RouterLink
-    >
   </nav>
   <div class="b">
     <RouterView />
