@@ -89,7 +89,7 @@ export const useDataStore = defineStore("data", {
       else this.questionsReserveCount = res.data.count;
     },
     async login(obj) {
-      const res = await axios.get("/login" + CreateQuery(obj));
+      const res = await axios.post("/login", obj);
       return res.data.result;
     },
     async moveQuestion(obj) {
